@@ -14,6 +14,7 @@ import { Route as PartnersRouteImport } from './routes/partners'
 import { Route as EligibilityRouteImport } from './routes/eligibility'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as CategoriesRouteImport } from './routes/categories'
+import { Route as ApplyRouteImport } from './routes/apply'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
 
@@ -42,6 +43,11 @@ const CategoriesRoute = CategoriesRouteImport.update({
   path: '/categories',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApplyRoute = ApplyRouteImport.update({
+  id: '/apply',
+  path: '/apply',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AboutRoute = AboutRouteImport.update({
   id: '/about',
   path: '/about',
@@ -56,6 +62,7 @@ const IndexRoute = IndexRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/apply': typeof ApplyRoute
   '/categories': typeof CategoriesRoute
   '/contact': typeof ContactRoute
   '/eligibility': typeof EligibilityRoute
@@ -65,6 +72,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/apply': typeof ApplyRoute
   '/categories': typeof CategoriesRoute
   '/contact': typeof ContactRoute
   '/eligibility': typeof EligibilityRoute
@@ -75,6 +83,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/apply': typeof ApplyRoute
   '/categories': typeof CategoriesRoute
   '/contact': typeof ContactRoute
   '/eligibility': typeof EligibilityRoute
@@ -86,6 +95,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/about'
+    | '/apply'
     | '/categories'
     | '/contact'
     | '/eligibility'
@@ -95,6 +105,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/about'
+    | '/apply'
     | '/categories'
     | '/contact'
     | '/eligibility'
@@ -104,6 +115,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/about'
+    | '/apply'
     | '/categories'
     | '/contact'
     | '/eligibility'
@@ -114,6 +126,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AboutRoute: typeof AboutRoute
+  ApplyRoute: typeof ApplyRoute
   CategoriesRoute: typeof CategoriesRoute
   ContactRoute: typeof ContactRoute
   EligibilityRoute: typeof EligibilityRoute
@@ -158,6 +171,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CategoriesRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/apply': {
+      id: '/apply'
+      path: '/apply'
+      fullPath: '/apply'
+      preLoaderRoute: typeof ApplyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/about': {
       id: '/about'
       path: '/about'
@@ -178,6 +198,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
+  ApplyRoute: ApplyRoute,
   CategoriesRoute: CategoriesRoute,
   ContactRoute: ContactRoute,
   EligibilityRoute: EligibilityRoute,
