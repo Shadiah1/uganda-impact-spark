@@ -1,6 +1,7 @@
 import { Link, useRouterState } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { Menu, X } from "lucide-react";
+import logoAsset from "@/assets/sacia-logo.jpg.asset.json";
 
 const links = [
   { to: "/", label: "Home" },
@@ -35,9 +36,10 @@ export function Navbar() {
       }`}
     >
       <div className="container-prose flex items-center justify-between h-16 md:h-20">
-        <Link to="/" className="flex items-center gap-2 group">
-          <span className="font-display text-2xl md:text-3xl tracking-tight text-gold-light group-hover:text-gold transition">
-            SIA<span className="text-white/90 font-sans text-sm align-top ml-1">2026</span>
+        <Link to="/" className="flex items-center gap-3 group">
+          <img src={logoAsset.url} alt="SIA logo" className="h-10 md:h-12 w-auto object-contain" />
+          <span className="font-display text-xl md:text-2xl tracking-tight text-gold-light group-hover:text-gold transition hidden sm:inline">
+            SIA<span className="text-white/90 font-sans text-xs align-top ml-1">2026</span>
           </span>
         </Link>
 
