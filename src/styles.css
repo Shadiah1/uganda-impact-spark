@@ -10,8 +10,8 @@
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
 
-  --font-display: "Cormorant Garamond", ui-serif, Georgia, serif;
-  --font-sans: "Outfit", ui-sans-serif, system-ui, sans-serif;
+  --font-display: Georgia, "Times New Roman", ui-serif, serif;
+  --font-sans: Calibri, "Segoe UI", system-ui, -apple-system, sans-serif;
 
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -52,36 +52,40 @@
 :root {
   --radius: 0.5rem;
 
-  --navy: #1A1A2E;
-  --navy-deep: #11111f;
-  --gold: #C8960C;
-  --gold-light: #F0C040;
-  --gold-pale: #FEF3C7;
-  --purple: #4B0082;
+  /* SACIA Brand Palette */
+  --navy: #1A1A1A;        /* Brand Black */
+  --navy-deep: #0D0D0D;
+  --gold: #B8860B;        /* SACIA Gold */
+  --gold-light: #D4A017;  /* Light Gold */
+  --gold-deep: #8B6508;   /* Deep Gold */
+  --gold-pale: #FAF7F0;   /* Cream */
+  --purple: #8B6508;      /* legacy alias → deep gold */
   --green: #065F46;
-  --red-soft: #991B1B;
-  --off-white: #F8F6F0;
-  --ink: #1A1A2E;
+  --red-soft: #C0392B;    /* Accent Red */
+  --red-deep: #922B21;
+  --red-light: #E74C3C;
+  --off-white: #FAF7F0;
+  --ink: #1A1A1A;
 
-  --background: #F8F6F0;
-  --foreground: #1A1A2E;
+  --background: #FAF7F0;
+  --foreground: #1A1A1A;
   --card: #FFFFFF;
-  --card-foreground: #1A1A2E;
+  --card-foreground: #1A1A1A;
   --popover: #FFFFFF;
-  --popover-foreground: #1A1A2E;
-  --primary: #C8960C;
-  --primary-foreground: #1A1A2E;
-  --secondary: #1A1A2E;
-  --secondary-foreground: #F8F6F0;
-  --muted: #EFEAE0;
-  --muted-foreground: #6B7280;
-  --accent: #FEF3C7;
-  --accent-foreground: #1A1A2E;
-  --destructive: #991B1B;
+  --popover-foreground: #1A1A1A;
+  --primary: #B8860B;
+  --primary-foreground: #FFFFFF;
+  --secondary: #1A1A1A;
+  --secondary-foreground: #FAF7F0;
+  --muted: #F5F5F5;
+  --muted-foreground: #4A4A4A;
+  --accent: #FAF7F0;
+  --accent-foreground: #1A1A1A;
+  --destructive: #C0392B;
   --destructive-foreground: #ffffff;
-  --border: #E5E0D3;
-  --input: #E5E0D3;
-  --ring: #C8960C;
+  --border: #E8E2D2;
+  --input: #E8E2D2;
+  --ring: #B8860B;
 }
 
 @keyframes shimmer {
