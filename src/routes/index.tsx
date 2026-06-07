@@ -201,16 +201,19 @@ function Home() {
             </h2>
           </div>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-            {TIMELINE.map(([date, title], i) => (
-              <div key={title} className="relative">
-                <div className="absolute -top-3 left-0 w-12 h-px bg-gold" />
-                <div className="text-xs uppercase tracking-[0.25em] text-gold-light bg-navy inline-block px-2 py-1">
-                  Step {i + 1}
+            {TIMELINE.map(([date, title], i) => {
+              const isDeadline = i === 1;
+              return (
+                <div key={title} className="relative">
+                  <div className={`absolute -top-3 left-0 w-12 h-px ${isDeadline ? "bg-red-soft" : "bg-gold"}`} />
+                  <div className={`text-xs uppercase tracking-[0.25em] inline-block px-2 py-1 ${isDeadline ? "bg-red-soft text-white" : "text-gold-light bg-navy"}`}>
+                    {isDeadline ? "Deadline" : `Step ${i + 1}`}
+                  </div>
+                  <div className={`mt-4 font-display text-2xl ${isDeadline ? "text-red-deep" : "text-navy"}`}>{date}</div>
+                  <div className="mt-1 text-sm text-muted-foreground">{title}</div>
                 </div>
-                <div className="mt-4 font-display text-2xl text-navy">{date}</div>
-                <div className="mt-1 text-sm text-muted-foreground">{title}</div>
-              </div>
-            ))}
+              );
+            })}
           </div>
           <div className="text-center mt-12">
             <Link to="/timeline" className="text-sm font-semibold text-navy border-b-2 border-gold pb-1">
