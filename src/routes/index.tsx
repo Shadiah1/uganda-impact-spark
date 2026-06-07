@@ -43,8 +43,14 @@ function Home() {
         <div className="absolute inset-0 bg-[linear-gradient(rgba(26,26,46,0)_0%,rgba(17,17,31,0.6)_100%)]" />
         <div className="container-prose relative pt-32 pb-20 md:py-0 grid lg:grid-cols-12 gap-12 items-center">
           <div className="lg:col-span-8">
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-gold/30 bg-gold/[0.06] text-xs uppercase tracking-[0.25em] text-gold-light">
-              <Sparkles size={12} /> Edition 1 — Kampala 2026
+            <div className="flex flex-wrap items-center gap-3">
+              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-gold/30 bg-gold/[0.06] text-xs uppercase tracking-[0.25em] text-gold-light">
+                <Sparkles size={12} /> Edition 1 — Kampala 2026
+              </div>
+              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-red-soft/15 border border-red-soft/40 text-xs uppercase tracking-[0.25em] text-red-light">
+                <span className="w-1.5 h-1.5 rounded-full bg-red-light animate-pulse" />
+                Deadline 25 Jul
+              </div>
             </div>
             <h1 className="mt-6 font-display text-[2.75rem] sm:text-6xl md:text-7xl lg:text-[5.5rem] leading-[0.98]">
               Uganda's Students.
