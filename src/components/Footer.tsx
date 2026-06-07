@@ -1,5 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { Facebook, Instagram, Twitter, Music2 } from "lucide-react";
+import logoAsset from "@/assets/sacia-logo.jpg.asset.json";
 
 export function Footer() {
   return (
@@ -7,7 +8,7 @@ export function Footer() {
       <div className="hairline-gold" />
       <div className="container-prose py-16 grid gap-12 md:grid-cols-3">
         <div>
-          <div className="font-display text-3xl text-gold-light">SIA 2026</div>
+          <img src={logoAsset.url} alt="SIA logo" className="h-16 w-auto object-contain mb-3" />
           <p className="mt-4 text-sm leading-relaxed text-white/65 max-w-xs">
             The Student Impact Awards celebrate Uganda's boldest young innovators
             aged 9–24 — organised by the Malaika Children Initiative.
