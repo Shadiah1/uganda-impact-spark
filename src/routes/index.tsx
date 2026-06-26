@@ -1,7 +1,19 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { AnimateOnScroll } from "@/components/AnimateOnScroll";
-import { CATEGORIES } from "@/lib/categories";
-import { ArrowRight, Play, Facebook, Instagram, Twitter, Linkedin, Youtube } from "lucide-react";
+import { CountdownTimer } from "@/components/CountdownTimer";
+import { CATEGORIES, HONORARY } from "@/lib/categories";
+import {
+  Accordion, AccordionContent, AccordionItem, AccordionTrigger,
+} from "@/components/ui/accordion";
+import {
+  ArrowRight, Play, Facebook, Instagram, Twitter, Linkedin, Youtube,
+  Check, X, Info, Mail, Phone, MapPin, Target, Eye, Trophy, Users, Calendar,
+  Megaphone, ClipboardCheck, Gavel, Sparkles, Mic, Heart,
+} from "lucide-react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import { toast } from "sonner";
 import logoAsset from "@/assets/sacia-logo.jpg.asset.json";
 
 export const Route = createFileRoute("/")({
@@ -11,7 +23,7 @@ export const Route = createFileRoute("/")({
       {
         name: "description",
         content:
-          "Uganda's national student innovation awards. Celebrating bold innovators aged 9–24 across 12 categories. 8 September 2026, Kampala. Apply free.",
+          "Uganda's national student innovation awards. Celebrating bold innovators aged 9–24 across 10 categories. 8 September 2026, Kampala. Apply free.",
       },
       { property: "og:title", content: "Student Impact Awards 2026" },
       { property: "og:description", content: "Apply free — Uganda's biggest student awards." },
@@ -20,284 +32,484 @@ export const Route = createFileRoute("/")({
   component: Home,
 });
 
-const TIMELINE = [
-  ["June 2026", "Launch & National Outreach", "Campaign rollout across schools, universities and youth networks nationwide."],
-  ["June – 25 July 2026", "Open Call for Applications", "Free applications accepted across all 12 award categories."],
-  ["26 July – 15 August 2026", "Internal Assessment & Due Diligence", "Submissions reviewed against eligibility and impact criteria."],
-  ["16 – 25 August 2026", "Judges' Panel Review", "Independent panel of educators, innovators and industry leaders shortlists finalists."],
-  ["28 August 2026", "Notification of Finalists", "Finalists privately notified and onboarded."],
-  ["1 September 2026", "Public Announcement of Finalists", "Finalists revealed to the public and partner press."],
-  ["7 September 2026", "Finalists Programme", "Mentorship sessions, masterclasses and media training in Kampala."],
-  ["8 September 2026", "Awards Gala — Kampala", "Live ceremony at Makerere Innovation & Incubation Centre."],
-] as const;
+/* ----------------------- Static data ----------------------- */
+
+const PHASES = [
+  { icon: Megaphone, date: "June 2026", title: "Launch & National Outreach", body: "Public launch, school visits across Uganda's four regions, partner activations, and the free application portal opens." },
+  { icon: ClipboardCheck, date: "1 Jun – 25 Jul 2026", title: "Open Applications", body: "Free applications accepted across all categories. Daily clinics on social media." },
+  { icon: Gavel, date: "26 Jul – 15 Aug 2026", title: "Judging & Shortlisting", body: "Independent expert panels score by category. Verification calls with endorsers. Top finalists advance." },
+  { icon: Sparkles, date: "16 Aug – 5 Sep 2026", title: "Finalist Spotlight Series", body: "Daily features across national TV, radio and social. Each finalist receives mentorship pairing." },
+  { icon: Mic, date: "7 Sep 2026", title: "Innovation Showcase", body: "Public exhibition day at Makerere Innovation & Incubation Centre — finalist demos, partner booths, school tours." },
+  { icon: Trophy, date: "8 Sep 2026", title: "Awards Gala", body: "Live ceremony with broadcast coverage. Category winners, honorary awards, alumni induction." },
+];
 
 const PARTNERS = [
-  "Malaika Children Initiative",
+  "Malaika Children's Initiative",
   "Makerere Innovation & Incubation Centre",
-  "Ministry of Education & Sports",
-  "UNCST",
-  "NBS TV",
 ];
+
+const TIERS = [
+  {
+    name: "Platinum", price: "UGX 5,000,000+", color: "from-gold/30 to-gold/[0.05]", border: "border-gold",
+    benefits: ["Title sponsor of two categories", "Stage co-host slot at the gala", "Premium logo on all assets", "20 VIP gala seats", "Co-branded national press release"],
+  },
+  {
+    name: "Gold", price: "UGX 2,500,000", color: "from-purple/30 to-purple/[0.05]", border: "border-purple",
+    benefits: ["Title sponsor of one category", "Logo on broadcast bumpers", "12 VIP gala seats", "Booth at Innovation Showcase", "Post-event impact report"],
+  },
+  {
+    name: "Silver", price: "UGX 1,000,000", color: "from-red-soft/30 to-red-soft/[0.05]", border: "border-red-soft",
+    benefits: ["Co-sponsor of one category", "Logo on website + social", "6 VIP gala seats", "Mention in finalist features", "Highlight reel feature"],
+  },
+  {
+    name: "Bronze", price: "UGX 500,000", color: "from-green/30 to-green/[0.05]", border: "border-green",
+    benefits: ["Community Partner listing", "Logo on programme booklet", "2 gala seats", "Social media thank-you posts", "Invitation to alumni events"],
+  },
+];
+
+const CAN = [
+  "Aged 9–24 on 1 January 2026.",
+  "Enrolled in a Ugandan primary, secondary or tertiary institution.",
+  "Have not yet completed an undergraduate degree.",
+  "Lead or co-lead an original project or initiative.",
+  "Endorsed by a teacher, head of department or principal.",
+];
+const CANNOT = [
+  "Holders of a completed Bachelor's degree or higher.",
+  "Applicants outside the 9–24 age range.",
+  "Students enrolled outside Uganda.",
+  "Submissions without verifiable school endorsement.",
+  "Direct family members of SIA judges or organising team.",
+];
+
+const FAQ: [string, string][] = [
+  ["Is there an application fee?", "No. Applications to the Student Impact Awards are completely FREE."],
+  ["Can I apply in more than one category?", "Yes — you may submit up to two distinct applications across different categories."],
+  ["Can a group of students apply together?", "Yes, for project-based categories. One lead applicant must be named."],
+  ["Do I need to be enrolled at the time of the awards?", "You must be enrolled when you apply (by 25 July 2026)."],
+  ["My school is not on a partner list — can I still apply?", "Absolutely. SIA is open to every Ugandan student in every accredited institution."],
+  ["What if I am under 18?", "A parent or legal guardian must co-sign the consent step in the application."],
+  ["How are entries judged?", "Each category has an independent expert panel scoring on originality, impact, scalability and integrity."],
+  ["When and where is the ceremony?", "Tuesday 8 September 2026 at the Makerere Innovation & Incubation Centre, Kampala."],
+];
+
+/* ----------------------- Schemas ----------------------- */
+
+const contactSchema = z.object({
+  name: z.string().trim().min(2, "Name is required").max(100),
+  email: z.string().trim().email("Enter a valid email").max(160),
+  subject: z.string().trim().min(3, "Subject is required").max(120),
+  message: z.string().trim().min(10, "Tell us a bit more").max(1000),
+});
+type ContactForm = z.infer<typeof contactSchema>;
+
+const applySchema = z.object({
+  fullName: z.string().trim().min(2, "Full name required").max(100),
+  age: z.coerce.number().min(9, "Min age 9").max(24, "Max age 24"),
+  email: z.string().trim().email("Valid email"),
+  phone: z.string().trim().min(7, "Phone required"),
+  institution: z.string().trim().min(2, "Institution required"),
+  category: z.string().min(1, "Choose a category"),
+  projectTitle: z.string().trim().min(3, "Title required"),
+  projectSummary: z.string().trim().min(20, "Tell us a bit more").max(1200),
+  consent: z.literal(true, { message: "Required" }),
+});
+type ApplyForm = z.infer<typeof applySchema>;
+
+const partnerSchema = z.object({
+  org: z.string().trim().min(2, "Organisation required"),
+  name: z.string().trim().min(2, "Contact name required"),
+  email: z.string().trim().email("Valid email"),
+  tier: z.string().min(1, "Pick a tier"),
+  message: z.string().trim().min(10, "Tell us a bit more"),
+});
+type PartnerForm = z.infer<typeof partnerSchema>;
+
+/* ----------------------- Ribbons ----------------------- */
 
 function Ribbons() {
   return (
-    <svg
-      className="absolute inset-0 w-full h-full"
-      viewBox="0 0 1440 900"
-      preserveAspectRatio="xMidYMid slice"
-      aria-hidden="true"
-    >
+    <svg className="absolute inset-0 w-full h-full" viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
       <defs>
         <linearGradient id="g1" x1="0" x2="1" y1="0" y2="1">
-          <stop offset="0%" stopColor="#C0392B" />
-          <stop offset="100%" stopColor="#922B21" />
+          <stop offset="0%" stopColor="#C0392B" /><stop offset="100%" stopColor="#922B21" />
         </linearGradient>
         <linearGradient id="g2" x1="0" x2="1" y1="0" y2="1">
-          <stop offset="0%" stopColor="#D4A017" />
-          <stop offset="100%" stopColor="#8B6508" />
+          <stop offset="0%" stopColor="#D4A017" /><stop offset="100%" stopColor="#8B6508" />
         </linearGradient>
         <linearGradient id="g3" x1="0" x2="1" y1="0" y2="1">
-          <stop offset="0%" stopColor="#065F46" />
-          <stop offset="100%" stopColor="#022C22" />
+          <stop offset="0%" stopColor="#065F46" /><stop offset="100%" stopColor="#022C22" />
         </linearGradient>
       </defs>
-      <path
-        d="M -100 700 C 200 200, 600 100, 900 350 S 1400 800, 1600 500"
-        stroke="url(#g1)"
-        strokeWidth="220"
-        fill="none"
-        strokeLinecap="round"
-        opacity="0.85"
-      />
-      <path
-        d="M -100 850 C 300 400, 700 300, 1000 550 S 1500 950, 1700 700"
-        stroke="url(#g3)"
-        strokeWidth="200"
-        fill="none"
-        strokeLinecap="round"
-        opacity="0.7"
-      />
-      <path
-        d="M -100 550 C 250 100, 750 50, 1050 250 S 1500 700, 1700 400"
-        stroke="url(#g2)"
-        strokeWidth="140"
-        fill="none"
-        strokeLinecap="round"
-        opacity="0.55"
-      />
+      <path d="M -100 700 C 200 200, 600 100, 900 350 S 1400 800, 1600 500" stroke="url(#g1)" strokeWidth="220" fill="none" strokeLinecap="round" opacity="0.85" />
+      <path d="M -100 850 C 300 400, 700 300, 1000 550 S 1500 950, 1700 700" stroke="url(#g3)" strokeWidth="200" fill="none" strokeLinecap="round" opacity="0.7" />
+      <path d="M -100 550 C 250 100, 750 50, 1050 250 S 1500 700, 1700 400" stroke="url(#g2)" strokeWidth="140" fill="none" strokeLinecap="round" opacity="0.55" />
     </svg>
   );
 }
 
+/* ============================ PAGE ============================ */
+
 function Home() {
+  const scrollTo = (id: string) => {
+    document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
+
   return (
     <>
-      {/* HERO — full-bleed navy with curved color ribbons */}
-      <section className="relative min-h-screen flex flex-col items-center justify-center bg-navy text-white overflow-hidden">
+      {/* HERO */}
+      <section id="home" className="relative min-h-screen flex flex-col items-center justify-center bg-navy text-white overflow-hidden">
         <Ribbons />
         <div className="absolute inset-0 bg-gradient-to-b from-navy/30 via-transparent to-navy/80" />
-
         <div className="relative z-10 text-center px-6 max-w-4xl mt-16">
           <div className="text-[10px] md:text-xs uppercase tracking-[0.45em] text-gold-light/90 mb-8">
-            Malaika Children Initiative presents
+            Malaika Children's Initiative presents
           </div>
-
           <h1 className="font-display text-5xl sm:text-6xl md:text-8xl leading-[0.95] tracking-tight">
-            STUDENT
-            <br />
-            <span className="gold-shimmer">IMPACT</span>
-            <br />
-            AWARDS
+            STUDENT<br /><span className="gold-shimmer">IMPACT</span><br />AWARDS
           </h1>
-
           <div className="mt-8 text-sm md:text-base uppercase tracking-[0.35em] text-white/85">
             Edition 1 · Kampala · 2026
           </div>
-
-          <Link
-            to="/apply"
+          <button
+            onClick={() => scrollTo("apply")}
             className="mt-10 inline-flex items-center gap-3 px-8 py-4 rounded-full bg-red-soft hover:bg-red-deep text-white text-sm uppercase tracking-[0.25em] font-semibold transition shadow-[0_10px_40px_-10px_rgba(192,57,43,0.7)]"
           >
             <span className="w-2 h-2 rounded-full bg-white animate-pulse" />
             Apply by 25 July 2026
             <ArrowRight size={16} />
-          </Link>
+          </button>
         </div>
-
-        <div className="relative z-10 mt-16 mb-8 text-center text-white/60 text-xs uppercase tracking-[0.3em]">
+        <button onClick={() => scrollTo("about")} className="relative z-10 mt-16 mb-8 text-center text-white/60 text-xs uppercase tracking-[0.3em] hover:text-gold-light transition">
           ↓ Scroll to explore
-        </div>
-      </section>
-
-      {/* MEET THE SIA — intro narrative */}
-      <section className="bg-navy text-white py-28 md:py-40 relative overflow-hidden">
-        <div className="absolute inset-0 opacity-10 bg-[radial-gradient(circle_at_50%_0%,#D4A017_0%,transparent_60%)]" />
-        <div className="container-prose relative max-w-4xl text-center">
-          <h2 className="font-display text-3xl md:text-4xl uppercase tracking-[0.15em] text-white/80">
-            Meet the
-          </h2>
-          <img
-            src={logoAsset.url}
-            alt="Student Impact Awards"
-            className="mx-auto mt-8 h-28 md:h-40 w-auto object-contain"
-          />
-          <p className="mt-12 text-lg md:text-xl leading-relaxed text-white/80">
-            The Student Impact Awards are Uganda's boldest young changemakers. Fearless and
-            persistent, they are in every district — often working quietly against the odds to
-            invent, organise, teach, perform and build a more equitable Uganda. They remind us
-            that progress starts with people, and that the future is already in the classroom.
-          </p>
-          <p className="mt-8 text-base md:text-lg leading-relaxed text-white/65">
-            Each year, the Student Impact Awards programme champions student innovators aged 9 to
-            24 — from primary schools to final-year undergraduates — recognising the inventors,
-            journalists, athletes, artists and activists already shifting their communities, long
-            before convocation.
-          </p>
-        </div>
+        </button>
       </section>
 
       {/* ABOUT */}
-      <section className="bg-off-white py-28 md:py-32">
-        <div className="container-prose max-w-4xl">
-          <h2 className="font-display text-3xl md:text-4xl text-navy">
-            About the <span className="text-gold">Student Impact Awards</span>
-          </h2>
-          <div className="mt-10 space-y-6 text-lg leading-relaxed text-foreground/80">
-            <p>
-              In 2026, the Malaika Children Initiative will bring together finalists from across
-              Uganda for a unique programme of coaching, mentorship and media training leading up
-              to the live Student Impact Awards Ceremony, where the winners are unveiled.
+      <section id="about" className="bg-off-white py-28 md:py-32">
+        <div className="container-prose max-w-5xl">
+          <AnimateOnScroll>
+            <div className="text-xs uppercase tracking-[0.3em] text-gold mb-4">About</div>
+            <h2 className="font-display text-4xl md:text-5xl text-navy leading-tight">
+              Recognising the students already shaping <span className="text-gold">Uganda</span>.
+            </h2>
+          </AnimateOnScroll>
+
+          <div className="mt-12 grid lg:grid-cols-2 gap-12">
+            <AnimateOnScroll>
+              <div className="space-y-5 text-lg leading-relaxed text-foreground/80">
+                <p>
+                  The Student Impact Awards are Uganda's national stage for student
+                  changemakers — innovators, entrepreneurs, activists, artists and
+                  scholars whose work is already shifting their schools and communities.
+                </p>
+                <p>
+                  Organised by the <strong className="text-navy">Malaika Children's Initiative</strong>,
+                  SIA brings together finalists from across Uganda for a unique programme of
+                  coaching, mentorship and media training leading up to the live awards ceremony.
+                </p>
+                <p>
+                  The 2026 Ceremony will take place on <strong className="text-navy">Tuesday, 8 September 2026</strong> at the
+                  <strong className="text-navy"> Makerere Innovation & Incubation Centre</strong> in Kampala.
+                </p>
+              </div>
+            </AnimateOnScroll>
+
+            <AnimateOnScroll delay={120}>
+              <div className="grid sm:grid-cols-2 gap-5">
+                {[
+                  { icon: Eye, title: "Vision", body: "A Uganda where every student innovator is seen, mentored and funded — irrespective of school, region or means." },
+                  { icon: Target, title: "Mission", body: "Identify, celebrate and accelerate the boldest student-led impact in Uganda through a free, transparent awards programme." },
+                  { icon: Heart, title: "Our Values", body: "Integrity, inclusivity, excellence and youth-led leadership at every stage of the programme." },
+                  { icon: Trophy, title: "Our Promise", body: "Free to enter. Mentorship for every finalist. A lifelong alumni network for every winner." },
+                ].map(({ icon: Icon, title, body }) => (
+                  <div key={title} className="bg-white border border-border p-6 rounded-sm">
+                    <div className="w-10 h-10 grid place-items-center rounded-sm bg-gold-pale text-gold">
+                      <Icon size={18} />
+                    </div>
+                    <h3 className="mt-4 font-display text-xl text-navy">{title}</h3>
+                    <p className="mt-2 text-sm text-muted-foreground leading-relaxed">{body}</p>
+                  </div>
+                ))}
+              </div>
+            </AnimateOnScroll>
+          </div>
+        </div>
+      </section>
+
+      {/* MEET THE SIA */}
+      <section className="bg-navy text-white py-24 relative overflow-hidden">
+        <div className="absolute inset-0 opacity-10 bg-[radial-gradient(circle_at_50%_0%,#D4A017_0%,transparent_60%)]" />
+        <div className="container-prose relative max-w-4xl text-center">
+          <h2 className="font-display text-3xl md:text-4xl uppercase tracking-[0.15em] text-white/80">Meet the</h2>
+          <img src={logoAsset.url} alt="Student Impact Awards" className="mx-auto mt-8 h-24 md:h-32 w-auto object-contain" />
+          <p className="mt-10 text-lg md:text-xl leading-relaxed text-white/80">
+            Uganda's boldest young changemakers. Fearless and persistent, they are in every
+            district — often working quietly against the odds to invent, organise, teach,
+            perform and build a more equitable Uganda.
+          </p>
+        </div>
+      </section>
+
+      {/* CATEGORIES */}
+      <section id="categories" className="bg-white py-28 md:py-32 border-y border-border">
+        <div className="container-prose">
+          <div className="text-center mb-16">
+            <div className="text-xs uppercase tracking-[0.4em] text-gold mb-4">The 2026 Edition</div>
+            <h2 className="font-display text-4xl md:text-6xl uppercase tracking-[0.05em] text-navy">
+              Award <span className="text-gold">Categories</span>
+            </h2>
+            <p className="mt-4 text-muted-foreground max-w-2xl mx-auto">
+              Ten competitive categories plus two honorary recognitions.
             </p>
-            <p>
-              This year's Ceremony will take place on <strong className="text-navy">Tuesday, 8 September 2026</strong> at the{" "}
-              <strong className="text-navy">Makerere Innovation & Incubation Centre</strong> in
-              Kampala. It will reach national audiences through partner broadcasters and a live
-              YouTube stream.
+          </div>
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {CATEGORIES.map((c, i) => (
+              <AnimateOnScroll key={c.id} delay={(i % 3) * 80}>
+                <div className="h-full bg-off-white border border-border hover:border-gold/60 rounded-sm p-7 transition group">
+                  <div className="flex items-start gap-4">
+                    <div className="text-3xl">{c.icon}</div>
+                    <div>
+                      <div className="text-[10px] uppercase tracking-[0.25em] text-gold">
+                        Award {String(i + 1).padStart(2, "0")}
+                      </div>
+                      <h3 className="mt-2 font-display text-xl text-navy leading-tight">{c.name}</h3>
+                    </div>
+                  </div>
+                  <p className="mt-4 text-sm text-muted-foreground leading-relaxed">{c.description}</p>
+                </div>
+              </AnimateOnScroll>
+            ))}
+          </div>
+
+          {/* HONORARY */}
+          <div className="mt-20">
+            <div className="text-center mb-10">
+              <div className="text-xs uppercase tracking-[0.3em] text-red-soft mb-3">Honorary Awards · Certificates</div>
+              <h3 className="font-display text-3xl text-navy">Two collective honours.</h3>
+            </div>
+            <div className="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto">
+              {HONORARY.map((h) => (
+                <div key={h.id} className="bg-navy text-white p-8 rounded-sm border-2 border-gold">
+                  <div className="text-3xl">{h.icon}</div>
+                  <h4 className="mt-4 font-display text-2xl text-gold-light">{h.name}</h4>
+                  <p className="mt-3 text-sm text-white/75 leading-relaxed">{h.description}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="text-center mt-14">
+            <button
+              onClick={() => scrollTo("apply")}
+              className="inline-flex items-center gap-2 px-8 py-4 bg-gold text-navy hover:bg-gold-light rounded-sm text-sm uppercase tracking-[0.25em] font-semibold transition"
+            >
+              Apply Now <ArrowRight size={16} />
+            </button>
+          </div>
+        </div>
+      </section>
+
+      {/* ELIGIBILITY */}
+      <section id="eligibility" className="bg-off-white py-28 md:py-32">
+        <div className="container-prose">
+          <div className="text-center mb-14">
+            <div className="text-xs uppercase tracking-[0.3em] text-gold mb-3">Eligibility & FAQ</div>
+            <h2 className="font-display text-4xl md:text-5xl text-navy">Who can apply?</h2>
+            <p className="mt-3 text-muted-foreground max-w-xl mx-auto">
+              SIA is free, transparent and open to every eligible Ugandan student.
             </p>
-            <p>
-              The Student Impact Awards programme is powered by the Malaika Children Initiative's
-              Youth Leaders pillar. Every category aligns with the UN Sustainable Development Goals
-              and is made possible in partnership with Uganda's leading universities, innovation
-              hubs, ministries and media houses.
+          </div>
+
+          <div className="grid md:grid-cols-2 gap-6 max-w-5xl mx-auto">
+            <div className="rounded-sm border-2 border-green/40 bg-green/[0.04] p-8">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 grid place-items-center bg-green text-white rounded-sm"><Check size={18} /></div>
+                <h3 className="font-display text-2xl text-green">You CAN apply if…</h3>
+              </div>
+              <ul className="mt-6 space-y-3">
+                {CAN.map((c) => (
+                  <li key={c} className="flex gap-3 text-navy text-[15px] leading-relaxed">
+                    <Check size={18} className="text-green shrink-0 mt-0.5" /> {c}
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <div className="rounded-sm border-2 border-red-soft/40 bg-red-soft/[0.04] p-8">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 grid place-items-center bg-red-soft text-white rounded-sm"><X size={18} /></div>
+                <h3 className="font-display text-2xl text-red-soft">You CANNOT apply if…</h3>
+              </div>
+              <ul className="mt-6 space-y-3">
+                {CANNOT.map((c) => (
+                  <li key={c} className="flex gap-3 text-navy text-[15px] leading-relaxed">
+                    <X size={18} className="text-red-soft shrink-0 mt-0.5" /> {c}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+
+          <div className="mt-10 max-w-5xl mx-auto flex gap-4 p-6 border-l-4 border-gold bg-gold-pale rounded-sm">
+            <Info className="text-gold shrink-0" />
+            <p className="text-navy leading-relaxed">
+              <strong>Applicants under 18:</strong> a parent or legal guardian must co-sign the
+              consent declaration when applying.
             </p>
+          </div>
+
+          <div className="mt-16 max-w-3xl mx-auto">
+            <h3 className="font-display text-3xl text-navy text-center">Frequently asked questions</h3>
+            <Accordion type="single" collapsible className="mt-8">
+              {FAQ.map(([q, a], i) => (
+                <AccordionItem key={i} value={`f-${i}`} className="border-b border-border">
+                  <AccordionTrigger className="text-left text-navy font-display text-lg hover:no-underline">
+                    {q}
+                  </AccordionTrigger>
+                  <AccordionContent className="text-muted-foreground leading-relaxed">{a}</AccordionContent>
+                </AccordionItem>
+              ))}
+            </Accordion>
           </div>
         </div>
       </section>
 
       {/* TIMELINE */}
-      <section className="bg-white py-28 md:py-32 border-y border-border">
+      <section id="timeline" className="bg-white py-28 md:py-32 border-y border-border">
         <div className="container-prose max-w-5xl">
-          <h2 className="font-display text-4xl md:text-6xl uppercase tracking-[0.1em] text-navy text-center">
-            Timeline
-          </h2>
-          <div className="hairline-gold w-32 mx-auto mt-6" />
+          <div className="text-center mb-16">
+            <div className="text-xs uppercase tracking-[0.3em] text-gold mb-3">Timeline</div>
+            <h2 className="font-display text-4xl md:text-6xl uppercase tracking-[0.05em] text-navy">
+              Six phases. One September.
+            </h2>
+          </div>
 
-          <div className="mt-16 grid md:grid-cols-2 gap-x-16">
-            {TIMELINE.map(([date, title, body], i) => (
-              <AnimateOnScroll key={date} delay={i * 60}>
-                <div className="py-8 border-b border-border last:border-b-0">
-                  <div className="text-xs uppercase tracking-[0.3em] text-red-soft font-semibold">
-                    {date}
-                  </div>
-                  <h3 className="mt-3 font-display text-2xl text-navy">{title}</h3>
-                  <p className="mt-2 text-sm text-muted-foreground leading-relaxed">{body}</p>
-                </div>
-              </AnimateOnScroll>
-            ))}
+          <div className="relative">
+            <div className="hidden md:block absolute left-1/2 top-0 bottom-0 w-px bg-gradient-to-b from-gold via-gold/30 to-transparent" />
+            <div className="space-y-12">
+              {PHASES.map(({ icon: Icon, date, title, body }, i) => {
+                const left = i % 2 === 0;
+                return (
+                  <AnimateOnScroll key={i}>
+                    <div className={`md:grid md:grid-cols-2 md:gap-12 items-center ${left ? "" : "md:[direction:rtl]"}`}>
+                      <div className={`md:[direction:ltr] ${left ? "md:text-right" : ""}`}>
+                        <div className="text-xs uppercase tracking-[0.25em] text-red-soft font-semibold">{date}</div>
+                        <h3 className="mt-2 font-display text-2xl text-navy">{title}</h3>
+                        <p className="mt-2 text-sm text-muted-foreground leading-relaxed">{body}</p>
+                      </div>
+                      <div className={`md:[direction:ltr] hidden md:flex ${left ? "justify-start" : "justify-end"}`}>
+                        <div className="w-16 h-16 rounded-full bg-navy grid place-items-center border-4 border-gold">
+                          <Icon className="text-gold-light" size={22} />
+                        </div>
+                      </div>
+                    </div>
+                  </AnimateOnScroll>
+                );
+              })}
+            </div>
+          </div>
+
+          <div className="mt-20 text-center">
+            <div className="text-xs uppercase tracking-[0.3em] text-gold mb-3">Countdown to the gala</div>
+            <div className="mt-6 flex justify-center"><CountdownTimer /></div>
           </div>
         </div>
       </section>
 
-      {/* PARTNERS STRIP */}
-      <section className="bg-off-white py-20 border-b border-border">
-        <div className="container-prose">
-          <div className="text-center text-xs uppercase tracking-[0.4em] text-muted-foreground mb-10">
+      {/* PARTNERS */}
+      <section id="partners" className="bg-navy text-white py-28 md:py-32 relative overflow-hidden">
+        <div className="absolute inset-0 opacity-[0.07] bg-[radial-gradient(circle_at_20%_30%,#D4A017_0%,transparent_45%),radial-gradient(circle_at_80%_70%,#C0392B_0%,transparent_45%)]" />
+        <div className="container-prose relative">
+          <div className="text-center mb-14">
+            <div className="text-xs uppercase tracking-[0.4em] text-gold-light mb-3">Partners</div>
+            <h2 className="font-display text-4xl md:text-6xl uppercase tracking-[0.05em]">
+              Stand with Uganda's <span className="text-gold">brightest</span>.
+            </h2>
+          </div>
+
+          {/* Current partners */}
+          <div className="text-center text-xs uppercase tracking-[0.4em] text-white/60 mb-8">
             In partnership with
           </div>
-          <div className="flex flex-wrap items-center justify-center gap-x-12 gap-y-6">
+          <div className="flex flex-wrap items-center justify-center gap-x-12 gap-y-6 mb-20">
             {PARTNERS.map((p) => (
-              <div
-                key={p}
-                className="font-display text-base md:text-lg text-navy/70 hover:text-navy transition tracking-wide"
-              >
+              <div key={p} className="font-display text-lg md:text-2xl text-gold-light tracking-wide text-center">
                 {p}
               </div>
             ))}
           </div>
-          <div className="text-center mt-10">
-            <Link
-              to="/partners"
-              className="text-sm font-semibold text-navy border-b-2 border-gold pb-1 hover:text-gold transition"
-            >
-              See all partners →
-            </Link>
+
+          {/* Sponsorship tiers */}
+          <div className="text-center mb-10">
+            <div className="text-xs uppercase tracking-[0.3em] text-gold-light mb-2">Sponsorship Tiers</div>
+            <h3 className="font-display text-3xl">Four ways to partner — plus in-kind support.</h3>
+          </div>
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {TIERS.map((t) => (
+              <AnimateOnScroll key={t.name}>
+                <div className={`relative h-full bg-gradient-to-b ${t.color} border-2 ${t.border} rounded-sm p-7 flex flex-col text-white`}>
+                  <div className="text-xs uppercase tracking-[0.25em] text-white/70">Tier</div>
+                  <h4 className="mt-1 font-display text-3xl text-gold-light">{t.name}</h4>
+                  <div className="mt-1 font-mono text-sm text-white/90">{t.price}</div>
+                  <ul className="mt-5 space-y-2.5 text-sm text-white/85 flex-1">
+                    {t.benefits.map((b) => (
+                      <li key={b} className="flex gap-2">
+                        <span className="text-gold mt-0.5">◆</span><span>{b}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </AnimateOnScroll>
+            ))}
+          </div>
+
+          <div className="mt-8 max-w-3xl mx-auto p-6 border-l-4 border-gold bg-white/[0.04] rounded-sm">
+            <div className="flex gap-4">
+              <Heart className="text-gold shrink-0" />
+              <p className="text-white/85 leading-relaxed">
+                <strong className="text-gold-light">In-kind support welcome.</strong> We also accept
+                in-kind partnerships — venue, logistics, broadcast time, equipment, mentorship,
+                travel and more. Talk to us about a bespoke package.
+              </p>
+            </div>
+          </div>
+
+          {/* Partner enquiry form */}
+          <div className="mt-16 max-w-2xl mx-auto">
+            <h3 className="font-display text-2xl text-center text-gold-light">Become a partner</h3>
+            <PartnerEnquiryForm />
           </div>
         </div>
       </section>
 
-      {/* THE 2026 EDITION CATEGORIES — featured 3 */}
-      <section className="bg-navy text-white py-28 md:py-36 relative overflow-hidden">
-        <div className="absolute inset-0 opacity-[0.07] bg-[radial-gradient(circle_at_20%_30%,#D4A017_0%,transparent_45%),radial-gradient(circle_at_80%_70%,#C0392B_0%,transparent_45%)]" />
-        <div className="container-prose relative">
-          <div className="text-center mb-20">
-            <div className="text-xs uppercase tracking-[0.4em] text-gold-light mb-4">The 2026</div>
-            <h2 className="font-display text-4xl md:text-6xl uppercase tracking-[0.05em]">
-              Edition <span className="text-gold">Categories</span>
-            </h2>
+      {/* APPLY */}
+      <section id="apply" className="bg-off-white py-28 md:py-32">
+        <div className="container-prose max-w-3xl">
+          <div className="text-center mb-12">
+            <div className="text-xs uppercase tracking-[0.3em] text-gold mb-3">Apply</div>
+            <h2 className="font-display text-4xl md:text-5xl text-navy">Apply to SIA 2026.</h2>
+            <p className="mt-3 text-muted-foreground">
+              Roughly fifteen minutes. Completely free. Deadline 25 July 2026.
+            </p>
+            <div className="mt-6 inline-flex items-center gap-3 px-4 py-2 rounded-sm bg-gold text-navy font-semibold text-sm">
+              ⏳ Applications close: 25 July 2026
+            </div>
           </div>
-
-          <div className="grid md:grid-cols-3 gap-8">
-            {CATEGORIES.slice(0, 3).map((c, i) => {
-              const accents = ["bg-red-soft", "bg-gold", "bg-green"];
-              return (
-                <AnimateOnScroll key={c.id} delay={i * 100}>
-                  <div className="group h-full flex flex-col bg-white/[0.04] border border-white/10 rounded-sm p-8 hover:border-gold/50 transition">
-                    <div className={`w-14 h-14 grid place-items-center rounded-full ${accents[i]} text-2xl mb-6`}>
-                      {c.icon}
-                    </div>
-                    <div className="text-xs uppercase tracking-[0.3em] text-white/50">Award</div>
-                    <h3 className="mt-3 font-display text-3xl text-white leading-tight">
-                      {c.name}
-                    </h3>
-                    <p className="mt-5 text-sm text-white/70 leading-relaxed flex-1">
-                      {c.description}
-                    </p>
-                    <Link
-                      to="/apply"
-                      className="mt-8 inline-flex items-center gap-2 text-sm font-semibold text-gold-light hover:text-gold transition border-b border-gold/40 pb-1 self-start"
-                    >
-                      Apply Now <ArrowRight size={14} />
-                    </Link>
-                  </div>
-                </AnimateOnScroll>
-              );
-            })}
-          </div>
-
-          <div className="text-center mt-16">
-            <Link
-              to="/categories"
-              className="inline-flex items-center gap-2 px-8 py-4 border border-white/30 hover:border-gold hover:text-gold-light rounded-sm text-sm uppercase tracking-[0.25em]"
-            >
-              View all 12 categories <ArrowRight size={16} />
-            </Link>
-          </div>
+          <ApplyForm />
         </div>
       </section>
 
       {/* CEREMONY VIDEO BLOCK */}
-      <section className="bg-off-white py-28">
+      <section className="bg-white py-24 border-y border-border">
         <div className="container-prose max-w-5xl">
-          <div className="text-center mb-14">
+          <div className="text-center mb-12">
             <div className="text-xs uppercase tracking-[0.4em] text-gold mb-3">Watch the</div>
-            <h2 className="font-display text-4xl md:text-6xl uppercase tracking-[0.05em] text-navy">
-              2026 Ceremony
-            </h2>
-            <div className="mt-4 text-xs uppercase tracking-[0.3em] text-muted-foreground">
+            <h2 className="font-display text-4xl md:text-5xl uppercase tracking-[0.05em] text-navy">2026 Ceremony</h2>
+            <div className="mt-3 text-xs uppercase tracking-[0.3em] text-muted-foreground">
               Live · 8 September 2026 · Makerere
             </div>
           </div>
-
           <div className="relative aspect-video rounded-sm overflow-hidden bg-navy group cursor-pointer">
             <div className="absolute inset-0 bg-gradient-to-br from-navy via-red-deep/40 to-navy" />
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,#D4A017_0%,transparent_55%)] opacity-30" />
@@ -317,59 +529,239 @@ function Home() {
         </div>
       </section>
 
-      {/* SHARE & NEWSLETTER */}
-      <section className="bg-navy text-white py-24 relative overflow-hidden">
+      {/* CONTACT */}
+      <section id="contact" className="bg-navy text-white py-28 md:py-32 relative overflow-hidden">
         <div className="absolute inset-0 opacity-[0.08] bg-[radial-gradient(circle_at_70%_30%,#D4A017_0%,transparent_50%)]" />
-        <div className="container-prose relative grid md:grid-cols-2 gap-16">
-          <div>
-            <h3 className="text-xs uppercase tracking-[0.4em] text-gold-light">
-              Share & follow
-            </h3>
-            <div className="mt-4 font-display text-4xl md:text-5xl">#SIAUganda</div>
-            <div className="mt-8 flex flex-wrap gap-3">
-              {[
-                { Icon: Facebook, label: "Facebook" },
-                { Icon: Instagram, label: "Instagram" },
-                { Icon: Twitter, label: "X" },
-                { Icon: Linkedin, label: "LinkedIn" },
-                { Icon: Youtube, label: "YouTube" },
-              ].map(({ Icon, label }) => (
-                <a
-                  key={label}
-                  href="#"
-                  aria-label={label}
-                  className="w-12 h-12 grid place-items-center rounded-full border border-white/20 hover:border-gold hover:text-gold transition"
-                >
-                  <Icon size={18} />
-                </a>
-              ))}
-            </div>
+        <div className="container-prose relative">
+          <div className="text-center mb-14">
+            <div className="text-xs uppercase tracking-[0.3em] text-gold-light mb-3">Contact</div>
+            <h2 className="font-display text-4xl md:text-5xl">Let's talk SIA.</h2>
           </div>
 
-          <div>
-            <h3 className="text-xs uppercase tracking-[0.4em] text-gold-light">
-              Sign up for the newsletter
-            </h3>
-            <p className="mt-4 text-white/70 text-lg leading-relaxed max-w-md">
-              Be first to know about finalists, ceremony tickets and partner announcements.
-            </p>
-            <form className="mt-8 flex flex-col sm:flex-row gap-3">
-              <input
-                type="email"
-                required
-                placeholder="your.email@example.com"
-                className="flex-1 px-5 py-4 bg-white/5 border border-white/20 rounded-sm text-white placeholder:text-white/40 focus:border-gold outline-none transition"
-              />
-              <button
-                type="submit"
-                className="px-6 py-4 bg-gold text-navy font-semibold uppercase text-xs tracking-[0.25em] hover:bg-gold-light transition rounded-sm"
-              >
-                Subscribe
-              </button>
-            </form>
+          <div className="grid lg:grid-cols-2 gap-12 max-w-5xl mx-auto">
+            <div>
+              <h3 className="font-display text-2xl text-gold-light">Get in touch</h3>
+              <ul className="mt-6 space-y-5 text-white/85">
+                <li className="flex items-start gap-3">
+                  <Mail className="text-gold-light shrink-0 mt-1" size={18} />
+                  <div>
+                    <div className="text-xs uppercase tracking-[0.25em] text-white/60">Email</div>
+                    <a href="mailto:studentimpactawards@gmail.com" className="text-lg hover:text-gold-light transition break-all">
+                      studentimpactawards@gmail.com
+                    </a>
+                  </div>
+                </li>
+                <li className="flex items-start gap-3">
+                  <Phone className="text-gold-light shrink-0 mt-1" size={18} />
+                  <div>
+                    <div className="text-xs uppercase tracking-[0.25em] text-white/60">Phone</div>
+                    <a href="tel:+256779753082" className="text-lg hover:text-gold-light transition">
+                      +256 779 753 082
+                    </a>
+                  </div>
+                </li>
+                <li className="flex items-start gap-3">
+                  <MapPin className="text-gold-light shrink-0 mt-1" size={18} />
+                  <div>
+                    <div className="text-xs uppercase tracking-[0.25em] text-white/60">Find us</div>
+                    <address className="not-italic text-white/90 leading-relaxed">
+                      Malaika Children's Initiative<br />
+                      Makerere Innovation & Incubation Centre<br />
+                      Makerere University, Kampala, Uganda
+                    </address>
+                  </div>
+                </li>
+              </ul>
+
+              <div className="mt-8">
+                <div className="text-xs uppercase tracking-[0.25em] text-gold-light mb-4">Follow #SIAUganda</div>
+                <div className="flex gap-3">
+                  {[Facebook, Instagram, Twitter, Linkedin, Youtube].map((Icon, i) => (
+                    <a key={i} href="#" aria-label="Social" className="w-11 h-11 grid place-items-center rounded-full border border-white/20 hover:border-gold hover:text-gold transition">
+                      <Icon size={16} />
+                    </a>
+                  ))}
+                </div>
+              </div>
+
+              <div className="mt-8 rounded-sm overflow-hidden border border-white/10">
+                <iframe
+                  title="Makerere University map"
+                  src="https://www.google.com/maps?q=Makerere+University,+Kampala,+Uganda&output=embed"
+                  width="100%" height="260" style={{ border: 0 }} loading="lazy" referrerPolicy="no-referrer-when-downgrade"
+                />
+              </div>
+            </div>
+
+            <div>
+              <h3 className="font-display text-2xl text-gold-light">Send a message</h3>
+              <ContactForm />
+            </div>
           </div>
         </div>
       </section>
     </>
+  );
+}
+
+/* ============================ Forms ============================ */
+
+const darkInp = "w-full px-4 py-3 rounded-sm bg-white/[0.05] border border-white/15 text-white placeholder-white/40 focus:outline-none focus:border-gold transition";
+const lightInp = "w-full px-4 py-3 rounded-sm bg-white border border-border text-navy focus:outline-none focus:border-gold transition";
+
+function DarkField({ label, error, children, className = "" }: { label: string; error?: string; children: React.ReactNode; className?: string }) {
+  return (
+    <label className={`block ${className}`}>
+      <span className="text-xs uppercase tracking-[0.2em] text-gold-light">{label}</span>
+      <div className="mt-2">{children}</div>
+      {error && <span className="block mt-1 text-xs text-red-300">{error}</span>}
+    </label>
+  );
+}
+
+function LightField({ label, error, children, className = "" }: { label: string; error?: string; children: React.ReactNode; className?: string }) {
+  return (
+    <label className={`block ${className}`}>
+      <span className="text-xs uppercase tracking-[0.2em] text-navy/70">{label}</span>
+      <div className="mt-2">{children}</div>
+      {error && <span className="block mt-1 text-xs text-red-soft">{error}</span>}
+    </label>
+  );
+}
+
+function ContactForm() {
+  const form = useForm<ContactForm>({
+    resolver: zodResolver(contactSchema),
+    defaultValues: { name: "", email: "", subject: "", message: "" },
+  });
+  const onSubmit = (v: ContactForm) => {
+    console.log("contact", v);
+    toast.success("Message sent. We'll respond within 2 business days.");
+    form.reset();
+  };
+  return (
+    <form onSubmit={form.handleSubmit(onSubmit)} className="mt-6 space-y-4">
+      <DarkField label="Your name" error={form.formState.errors.name?.message}>
+        <input {...form.register("name")} className={darkInp} />
+      </DarkField>
+      <DarkField label="Email" error={form.formState.errors.email?.message}>
+        <input type="email" {...form.register("email")} className={darkInp} />
+      </DarkField>
+      <DarkField label="Subject" error={form.formState.errors.subject?.message}>
+        <input {...form.register("subject")} className={darkInp} />
+      </DarkField>
+      <DarkField label="Message" error={form.formState.errors.message?.message}>
+        <textarea rows={5} {...form.register("message")} className={darkInp} />
+      </DarkField>
+      <button type="submit" disabled={form.formState.isSubmitting} className="px-8 py-4 bg-gold text-navy font-semibold rounded-sm hover:bg-gold-light transition disabled:opacity-50">
+        Send Message
+      </button>
+    </form>
+  );
+}
+
+function PartnerEnquiryForm() {
+  const form = useForm<PartnerForm>({
+    resolver: zodResolver(partnerSchema),
+    defaultValues: { org: "", name: "", email: "", tier: "", message: "" },
+  });
+  const onSubmit = (v: PartnerForm) => {
+    console.log("partner", v);
+    toast.success("Thank you — our partnerships team will reply within 48 hours.");
+    form.reset();
+  };
+  return (
+    <form onSubmit={form.handleSubmit(onSubmit)} className="mt-6 grid sm:grid-cols-2 gap-4">
+      <DarkField label="Organisation" error={form.formState.errors.org?.message}>
+        <input {...form.register("org")} className={darkInp} />
+      </DarkField>
+      <DarkField label="Contact name" error={form.formState.errors.name?.message}>
+        <input {...form.register("name")} className={darkInp} />
+      </DarkField>
+      <DarkField label="Email" error={form.formState.errors.email?.message}>
+        <input type="email" {...form.register("email")} className={darkInp} />
+      </DarkField>
+      <DarkField label="Tier of interest" error={form.formState.errors.tier?.message}>
+        <select {...form.register("tier")} className={darkInp}>
+          <option value="">Select a tier…</option>
+          {TIERS.map((t) => <option key={t.name} value={t.name}>{t.name} — {t.price}</option>)}
+          <option value="In-kind">In-kind support</option>
+          <option value="Custom">Custom / bespoke</option>
+        </select>
+      </DarkField>
+      <DarkField label="Message" error={form.formState.errors.message?.message} className="sm:col-span-2">
+        <textarea rows={4} {...form.register("message")} className={darkInp} />
+      </DarkField>
+      <div className="sm:col-span-2">
+        <button type="submit" className="px-8 py-4 bg-gold text-navy font-semibold rounded-sm hover:bg-gold-light transition">
+          Send Enquiry
+        </button>
+      </div>
+    </form>
+  );
+}
+
+function ApplyForm() {
+  const form = useForm<ApplyForm>({
+    resolver: zodResolver(applySchema),
+    defaultValues: {
+      fullName: "", email: "", phone: "", institution: "",
+      category: "", projectTitle: "", projectSummary: "",
+    },
+  });
+  const onSubmit = (v: ApplyForm) => {
+    console.log("application", v);
+    toast.success("Application submitted! Check your email for confirmation.");
+    form.reset();
+  };
+  const errs = form.formState.errors;
+  return (
+    <form onSubmit={form.handleSubmit(onSubmit)} className="bg-white border border-border rounded-sm p-8 md:p-10 grid sm:grid-cols-2 gap-5">
+      <LightField label="Full name" error={errs.fullName?.message}>
+        <input {...form.register("fullName")} className={lightInp} />
+      </LightField>
+      <LightField label="Age" error={errs.age?.message}>
+        <input type="number" min={9} max={24} {...form.register("age")} className={lightInp} />
+      </LightField>
+      <LightField label="Email" error={errs.email?.message}>
+        <input type="email" {...form.register("email")} className={lightInp} />
+      </LightField>
+      <LightField label="Phone" error={errs.phone?.message}>
+        <input {...form.register("phone")} className={lightInp} />
+      </LightField>
+      <LightField label="Institution / School" error={errs.institution?.message} className="sm:col-span-2">
+        <input {...form.register("institution")} className={lightInp} />
+      </LightField>
+      <LightField label="Category" error={errs.category?.message} className="sm:col-span-2">
+        <select {...form.register("category")} className={lightInp}>
+          <option value="">Select category…</option>
+          {CATEGORIES.map((c) => <option key={c.id} value={c.name}>{c.name}</option>)}
+        </select>
+      </LightField>
+      <LightField label="Project title" error={errs.projectTitle?.message} className="sm:col-span-2">
+        <input {...form.register("projectTitle")} className={lightInp} />
+      </LightField>
+      <LightField label="Briefly describe your project & impact" error={errs.projectSummary?.message} className="sm:col-span-2">
+        <textarea rows={5} {...form.register("projectSummary")} className={lightInp} />
+      </LightField>
+      <label className="sm:col-span-2 flex gap-3 items-start p-4 border border-border rounded-sm cursor-pointer hover:border-gold transition">
+        <input type="checkbox" {...form.register("consent")} className="mt-1 accent-gold" />
+        <div>
+          <span className="text-sm text-navy leading-relaxed">
+            I confirm the information provided is true and accurate, I have read the
+            eligibility criteria, and I consent to SIA processing my data for this application.
+          </span>
+          {errs.consent?.message && <div className="text-xs text-red-soft mt-1">{String(errs.consent.message)}</div>}
+        </div>
+      </label>
+      <div className="sm:col-span-2 flex flex-wrap gap-4 items-center justify-between border-t border-border pt-6">
+        <p className="text-xs text-muted-foreground">
+          A full endorsement letter from your teacher / principal will be requested if you are shortlisted.
+        </p>
+        <button type="submit" className="inline-flex items-center gap-2 px-7 py-3 rounded-sm bg-gold text-navy font-semibold hover:bg-gold-light transition">
+          Submit Application <ArrowRight size={16} />
+        </button>
+      </div>
+    </form>
   );
 }
