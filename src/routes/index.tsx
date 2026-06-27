@@ -14,7 +14,8 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { toast } from "sonner";
-import logoAsset from "@/assets/sacia-logo.jpg.asset.json";
+import logoAsset from "@/assets/sia-logo.png.asset.json";
+import trophyAsset from "@/assets/sia-trophy.jpg.asset.json";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -237,17 +238,47 @@ function Home() {
         </div>
       </section>
 
-      {/* MEET THE SIA */}
-      <section className="bg-navy text-white py-24 relative overflow-hidden">
-        <div className="absolute inset-0 opacity-10 bg-[radial-gradient(circle_at_50%_0%,#D4A017_0%,transparent_60%)]" />
-        <div className="container-prose relative max-w-4xl text-center">
-          <h2 className="font-display text-3xl md:text-4xl uppercase tracking-[0.15em] text-white/80">Meet the</h2>
-          <img src={logoAsset.url} alt="Student Impact Awards" className="mx-auto mt-8 h-24 md:h-32 w-auto object-contain" />
-          <p className="mt-10 text-lg md:text-xl leading-relaxed text-white/80">
-            Uganda's boldest young changemakers. Fearless and persistent, they are in every
-            district — often working quietly against the odds to invent, organise, teach,
-            perform and build a more equitable Uganda.
-          </p>
+      {/* MEET THE SIA — trophy showcase */}
+      <section className="bg-navy text-white py-24 md:py-32 relative overflow-hidden">
+        <div className="absolute inset-0 opacity-20 bg-[radial-gradient(circle_at_20%_30%,#D4A017_0%,transparent_55%),radial-gradient(circle_at_85%_75%,#4B0082_0%,transparent_55%)]" />
+        <div className="container-prose relative grid lg:grid-cols-2 gap-14 items-center">
+          <AnimateOnScroll>
+            <div className="relative">
+              <div className="absolute -inset-6 bg-gradient-to-br from-gold/30 via-transparent to-purple/20 blur-3xl opacity-60" />
+              <div className="relative overflow-hidden rounded-sm border border-gold/30 shadow-[0_30px_80px_-20px_rgba(0,0,0,0.7)]">
+                <img
+                  src={trophyAsset.url}
+                  alt="The Student Impact Awards 2026 trophy — Student Innovator of the Year"
+                  className="w-full h-auto object-cover"
+                  loading="lazy"
+                />
+              </div>
+              <div className="absolute bottom-4 left-4 right-4 md:bottom-6 md:left-6 md:right-6 bg-navy-deep/85 backdrop-blur-sm border border-gold/40 rounded-sm px-5 py-4">
+                <div className="text-[10px] uppercase tracking-[0.3em] text-gold-light">The 2026 Trophy</div>
+                <div className="mt-1 font-display text-lg md:text-xl text-white">Honouring Impact, Inspiring Change</div>
+              </div>
+            </div>
+          </AnimateOnScroll>
+
+          <AnimateOnScroll delay={120}>
+            <div className="text-xs uppercase tracking-[0.4em] text-gold-light/90">Meet the</div>
+            <img src={logoAsset.url} alt="Student Impact Awards" className="mt-6 h-20 md:h-28 w-auto object-contain" />
+            <p className="mt-8 text-lg md:text-xl leading-relaxed text-white/80">
+              Uganda's boldest young changemakers. Fearless and persistent, they are in every
+              district — often working quietly against the odds to invent, organise, teach,
+              perform and build a more equitable Uganda.
+            </p>
+            <p className="mt-5 text-base leading-relaxed text-white/65">
+              On 8 September 2026, one of them will lift this trophy as Uganda's
+              <span className="text-gold-light"> Student Innovator of the Year</span>.
+            </p>
+            <button
+              onClick={() => scrollTo("categories")}
+              className="mt-8 inline-flex items-center gap-2 px-7 py-3 rounded-sm bg-gold text-navy hover:bg-gold-light text-sm uppercase tracking-[0.25em] font-semibold transition"
+            >
+              See the categories <ArrowRight size={16} />
+            </button>
+          </AnimateOnScroll>
         </div>
       </section>
 
