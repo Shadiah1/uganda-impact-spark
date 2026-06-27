@@ -1,5 +1,5 @@
 import { Facebook, Instagram, Twitter, Music2, Mail, Phone } from "lucide-react";
-import logoAsset from "@/assets/sacia-logo.jpg.asset.json";
+import logoAsset from "@/assets/sia-logo.png.asset.json";
 
 const sections = [
   ["about", "About SIA"],
