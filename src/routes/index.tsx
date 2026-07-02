@@ -51,22 +51,23 @@ const PARTNERS = [
 
 const TIERS = [
   {
-    name: "Platinum", price: "UGX 5,000,000+", color: "from-gold/30 to-gold/[0.05]", border: "border-gold",
+    name: "Platinum", price: "UGX 5,000,000+",
     benefits: ["Title sponsor of two categories", "Stage co-host slot at the gala", "Premium logo on all assets", "20 VIP gala seats", "Co-branded national press release"],
   },
   {
-    name: "Gold", price: "UGX 2,500,000", color: "from-purple/30 to-purple/[0.05]", border: "border-purple",
+    name: "Gold", price: "UGX 2,500,000",
     benefits: ["Title sponsor of one category", "Logo on broadcast bumpers", "12 VIP gala seats", "Booth at Innovation Showcase", "Post-event impact report"],
   },
   {
-    name: "Silver", price: "UGX 1,000,000", color: "from-red-soft/30 to-red-soft/[0.05]", border: "border-red-soft",
+    name: "Silver", price: "UGX 1,000,000",
     benefits: ["Co-sponsor of one category", "Logo on website + social", "6 VIP gala seats", "Mention in finalist features", "Highlight reel feature"],
   },
   {
-    name: "Bronze", price: "UGX 500,000", color: "from-green/30 to-green/[0.05]", border: "border-green",
+    name: "Bronze", price: "UGX 500,000",
     benefits: ["Community Partner listing", "Logo on programme booklet", "2 gala seats", "Social media thank-you posts", "Invitation to alumni events"],
   },
 ];
+
 
 const CAN = [
   "Aged 9–24 on 1 January 2026.",
@@ -354,33 +355,34 @@ function Home() {
           </div>
 
           <div className="grid md:grid-cols-2 gap-6 max-w-5xl mx-auto">
-            <div className="rounded-sm border-2 border-green/40 bg-green/[0.04] p-8">
+            <div className="rounded-sm border border-gold/40 bg-white p-8 shadow-sm">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 grid place-items-center bg-green text-white rounded-sm"><Check size={18} /></div>
-                <h3 className="font-display text-2xl text-green">You CAN apply if…</h3>
+                <div className="w-10 h-10 grid place-items-center bg-navy text-gold-light rounded-sm"><Check size={18} /></div>
+                <h3 className="font-display text-2xl text-navy">You CAN apply if…</h3>
               </div>
               <ul className="mt-6 space-y-3">
                 {CAN.map((c) => (
                   <li key={c} className="flex gap-3 text-navy text-[15px] leading-relaxed">
-                    <Check size={18} className="text-green shrink-0 mt-0.5" /> {c}
+                    <Check size={18} className="text-gold shrink-0 mt-0.5" /> {c}
                   </li>
                 ))}
               </ul>
             </div>
-            <div className="rounded-sm border-2 border-red-soft/40 bg-red-soft/[0.04] p-8">
+            <div className="rounded-sm border border-navy/15 bg-white p-8 shadow-sm">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 grid place-items-center bg-red-soft text-white rounded-sm"><X size={18} /></div>
-                <h3 className="font-display text-2xl text-red-soft">You CANNOT apply if…</h3>
+                <div className="w-10 h-10 grid place-items-center bg-navy text-gold-light rounded-sm"><X size={18} /></div>
+                <h3 className="font-display text-2xl text-navy">You CANNOT apply if…</h3>
               </div>
               <ul className="mt-6 space-y-3">
                 {CANNOT.map((c) => (
                   <li key={c} className="flex gap-3 text-navy text-[15px] leading-relaxed">
-                    <X size={18} className="text-red-soft shrink-0 mt-0.5" /> {c}
+                    <X size={18} className="text-navy/50 shrink-0 mt-0.5" /> {c}
                   </li>
                 ))}
               </ul>
             </div>
           </div>
+
 
           <div className="mt-10 max-w-5xl mx-auto flex gap-4 p-6 border-l-4 border-gold bg-gold-pale rounded-sm">
             <Info className="text-gold shrink-0" />
@@ -477,16 +479,17 @@ function Home() {
             <h3 className="font-display text-3xl">Four ways to partner — plus in-kind support.</h3>
           </div>
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {TIERS.map((t) => (
+            {TIERS.map((t, i) => (
               <AnimateOnScroll key={t.name}>
-                <div className={`relative h-full bg-gradient-to-b ${t.color} border-2 ${t.border} rounded-sm p-7 flex flex-col text-white`}>
-                  <div className="text-xs uppercase tracking-[0.25em] text-white/70">Tier</div>
-                  <h4 className="mt-1 font-display text-3xl text-gold-light">{t.name}</h4>
-                  <div className="mt-1 font-mono text-sm text-white/90">{t.price}</div>
-                  <ul className="mt-5 space-y-2.5 text-sm text-white/85 flex-1">
+                <div className="relative h-full bg-white/[0.03] border border-gold/30 rounded-sm p-7 flex flex-col text-white backdrop-blur-sm hover:border-gold/60 transition-colors">
+                  <div className="text-[10px] uppercase tracking-[0.3em] text-gold-light/70">Tier 0{i + 1}</div>
+                  <h4 className="mt-2 font-display text-3xl text-gold-light">{t.name}</h4>
+                  <div className="mt-1 font-mono text-xs text-white/70 tracking-wider">{t.price}</div>
+                  <div className="my-5 h-px bg-gold/20" />
+                  <ul className="space-y-2.5 text-sm text-white/80 flex-1">
                     {t.benefits.map((b) => (
                       <li key={b} className="flex gap-2">
-                        <span className="text-gold mt-0.5">◆</span><span>{b}</span>
+                        <span className="text-gold/70 mt-0.5">—</span><span>{b}</span>
                       </li>
                     ))}
                   </ul>
@@ -494,6 +497,7 @@ function Home() {
               </AnimateOnScroll>
             ))}
           </div>
+
 
           <div className="mt-8 max-w-3xl mx-auto p-6 border-l-4 border-gold bg-white/[0.04] rounded-sm">
             <div className="flex gap-4">
@@ -514,22 +518,69 @@ function Home() {
         </div>
       </section>
 
-      {/* APPLY */}
+      {/* APPLY / NOMINATE */}
       <section id="apply" className="bg-off-white py-28 md:py-32">
-        <div className="container-prose max-w-3xl">
-          <div className="text-center mb-12">
-            <div className="text-xs uppercase tracking-[0.3em] text-gold mb-3">Apply</div>
-            <h2 className="font-display text-4xl md:text-5xl text-navy">Apply to SIA 2026.</h2>
-            <p className="mt-3 text-muted-foreground">
-              Roughly fifteen minutes. Completely free. Deadline 25 July 2026.
+        <div className="container-prose max-w-5xl">
+          <div className="text-center mb-14">
+            <div className="text-xs uppercase tracking-[0.3em] text-gold mb-3">Apply or Nominate</div>
+            <h2 className="font-display text-4xl md:text-5xl text-navy">Two ways to take part.</h2>
+            <p className="mt-3 text-muted-foreground max-w-xl mx-auto">
+              Applications and nominations are completely free. Deadline 25 July 2026.
             </p>
-            <div className="mt-6 inline-flex items-center gap-3 px-4 py-2 rounded-sm bg-gold text-navy font-semibold text-sm">
-              ⏳ Applications close: 25 July 2026
+            <div className="mt-6 inline-flex items-center gap-3 px-4 py-2 rounded-sm bg-navy text-gold-light font-medium text-sm tracking-wide">
+              ⏳ Closes 25 July 2026
             </div>
           </div>
-          <ApplyForm />
+
+          <div className="grid md:grid-cols-2 gap-6">
+            {/* Applicant */}
+            <div className="group relative bg-white border border-gold/30 rounded-sm p-10 flex flex-col shadow-sm hover:shadow-md transition-shadow">
+              <div className="text-[10px] uppercase tracking-[0.3em] text-gold">01 · For students</div>
+              <h3 className="mt-3 font-display text-3xl text-navy">Applicant Form</h3>
+              <p className="mt-3 text-navy/70 leading-relaxed flex-1">
+                Apply directly if you are a Ugandan student aged 9–24 leading your own
+                project, initiative or innovation.
+              </p>
+              <div className="my-6 h-px bg-gold/20" />
+              <a
+                href="https://form.jotform.com/261625720398058"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center justify-center gap-2 px-6 py-4 bg-navy text-gold-light font-medium tracking-wide uppercase text-sm hover:bg-navy/90 transition-colors rounded-sm"
+              >
+                Open Applicant Form →
+              </a>
+              <div className="mt-3 text-xs text-navy/50 break-all font-mono">
+                form.jotform.com/261625720398058
+              </div>
+            </div>
+
+            {/* Nomination */}
+            <div className="group relative bg-navy text-white border border-gold/40 rounded-sm p-10 flex flex-col shadow-sm hover:shadow-md transition-shadow">
+              <div className="text-[10px] uppercase tracking-[0.3em] text-gold-light">02 · For teachers, mentors & peers</div>
+              <h3 className="mt-3 font-display text-3xl text-gold-light">Nomination Form</h3>
+              <p className="mt-3 text-white/75 leading-relaxed flex-1">
+                Know a remarkable student, teacher or club? Nominate them for recognition —
+                including our Honorary Awards.
+              </p>
+              <div className="my-6 h-px bg-gold/30" />
+              <a
+                href="https://form.jotform.com/261630897198067"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center justify-center gap-2 px-6 py-4 bg-gold text-navy font-medium tracking-wide uppercase text-sm hover:bg-gold-light transition-colors rounded-sm"
+              >
+                Open Nomination Form →
+              </a>
+              <div className="mt-3 text-xs text-white/50 break-all font-mono">
+                form.jotform.com/261630897198067
+              </div>
+            </div>
+          </div>
         </div>
       </section>
+
+
 
       {/* CEREMONY VIDEO BLOCK */}
       <section className="bg-white py-24 border-y border-border">
