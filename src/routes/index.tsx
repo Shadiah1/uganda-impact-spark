@@ -355,33 +355,34 @@ function Home() {
           </div>
 
           <div className="grid md:grid-cols-2 gap-6 max-w-5xl mx-auto">
-            <div className="rounded-sm border-2 border-green/40 bg-green/[0.04] p-8">
+            <div className="rounded-sm border border-gold/40 bg-white p-8 shadow-sm">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 grid place-items-center bg-green text-white rounded-sm"><Check size={18} /></div>
-                <h3 className="font-display text-2xl text-green">You CAN apply if…</h3>
+                <div className="w-10 h-10 grid place-items-center bg-navy text-gold-light rounded-sm"><Check size={18} /></div>
+                <h3 className="font-display text-2xl text-navy">You CAN apply if…</h3>
               </div>
               <ul className="mt-6 space-y-3">
                 {CAN.map((c) => (
                   <li key={c} className="flex gap-3 text-navy text-[15px] leading-relaxed">
-                    <Check size={18} className="text-green shrink-0 mt-0.5" /> {c}
+                    <Check size={18} className="text-gold shrink-0 mt-0.5" /> {c}
                   </li>
                 ))}
               </ul>
             </div>
-            <div className="rounded-sm border-2 border-red-soft/40 bg-red-soft/[0.04] p-8">
+            <div className="rounded-sm border border-navy/15 bg-white p-8 shadow-sm">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 grid place-items-center bg-red-soft text-white rounded-sm"><X size={18} /></div>
-                <h3 className="font-display text-2xl text-red-soft">You CANNOT apply if…</h3>
+                <div className="w-10 h-10 grid place-items-center bg-navy text-gold-light rounded-sm"><X size={18} /></div>
+                <h3 className="font-display text-2xl text-navy">You CANNOT apply if…</h3>
               </div>
               <ul className="mt-6 space-y-3">
                 {CANNOT.map((c) => (
                   <li key={c} className="flex gap-3 text-navy text-[15px] leading-relaxed">
-                    <X size={18} className="text-red-soft shrink-0 mt-0.5" /> {c}
+                    <X size={18} className="text-navy/50 shrink-0 mt-0.5" /> {c}
                   </li>
                 ))}
               </ul>
             </div>
           </div>
+
 
           <div className="mt-10 max-w-5xl mx-auto flex gap-4 p-6 border-l-4 border-gold bg-gold-pale rounded-sm">
             <Info className="text-gold shrink-0" />
