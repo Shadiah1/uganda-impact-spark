@@ -51,22 +51,23 @@ const PARTNERS = [
 
 const TIERS = [
   {
-    name: "Platinum", price: "UGX 5,000,000+", color: "from-gold/30 to-gold/[0.05]", border: "border-gold",
+    name: "Platinum", price: "UGX 5,000,000+",
     benefits: ["Title sponsor of two categories", "Stage co-host slot at the gala", "Premium logo on all assets", "20 VIP gala seats", "Co-branded national press release"],
   },
   {
-    name: "Gold", price: "UGX 2,500,000", color: "from-purple/30 to-purple/[0.05]", border: "border-purple",
+    name: "Gold", price: "UGX 2,500,000",
     benefits: ["Title sponsor of one category", "Logo on broadcast bumpers", "12 VIP gala seats", "Booth at Innovation Showcase", "Post-event impact report"],
   },
   {
-    name: "Silver", price: "UGX 1,000,000", color: "from-red-soft/30 to-red-soft/[0.05]", border: "border-red-soft",
+    name: "Silver", price: "UGX 1,000,000",
     benefits: ["Co-sponsor of one category", "Logo on website + social", "6 VIP gala seats", "Mention in finalist features", "Highlight reel feature"],
   },
   {
-    name: "Bronze", price: "UGX 500,000", color: "from-green/30 to-green/[0.05]", border: "border-green",
+    name: "Bronze", price: "UGX 500,000",
     benefits: ["Community Partner listing", "Logo on programme booklet", "2 gala seats", "Social media thank-you posts", "Invitation to alumni events"],
   },
 ];
+
 
 const CAN = [
   "Aged 9–24 on 1 January 2026.",
