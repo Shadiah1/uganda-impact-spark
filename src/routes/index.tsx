@@ -479,16 +479,17 @@ function Home() {
             <h3 className="font-display text-3xl">Four ways to partner — plus in-kind support.</h3>
           </div>
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {TIERS.map((t) => (
+            {TIERS.map((t, i) => (
               <AnimateOnScroll key={t.name}>
-                <div className={`relative h-full bg-gradient-to-b ${t.color} border-2 ${t.border} rounded-sm p-7 flex flex-col text-white`}>
-                  <div className="text-xs uppercase tracking-[0.25em] text-white/70">Tier</div>
-                  <h4 className="mt-1 font-display text-3xl text-gold-light">{t.name}</h4>
-                  <div className="mt-1 font-mono text-sm text-white/90">{t.price}</div>
-                  <ul className="mt-5 space-y-2.5 text-sm text-white/85 flex-1">
+                <div className="relative h-full bg-white/[0.03] border border-gold/30 rounded-sm p-7 flex flex-col text-white backdrop-blur-sm hover:border-gold/60 transition-colors">
+                  <div className="text-[10px] uppercase tracking-[0.3em] text-gold-light/70">Tier 0{i + 1}</div>
+                  <h4 className="mt-2 font-display text-3xl text-gold-light">{t.name}</h4>
+                  <div className="mt-1 font-mono text-xs text-white/70 tracking-wider">{t.price}</div>
+                  <div className="my-5 h-px bg-gold/20" />
+                  <ul className="space-y-2.5 text-sm text-white/80 flex-1">
                     {t.benefits.map((b) => (
                       <li key={b} className="flex gap-2">
-                        <span className="text-gold mt-0.5">◆</span><span>{b}</span>
+                        <span className="text-gold/70 mt-0.5">—</span><span>{b}</span>
                       </li>
                     ))}
                   </ul>
@@ -496,6 +497,7 @@ function Home() {
               </AnimateOnScroll>
             ))}
           </div>
+
 
           <div className="mt-8 max-w-3xl mx-auto p-6 border-l-4 border-gold bg-white/[0.04] rounded-sm">
             <div className="flex gap-4">
