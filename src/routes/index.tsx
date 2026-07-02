@@ -518,22 +518,69 @@ function Home() {
         </div>
       </section>
 
-      {/* APPLY */}
+      {/* APPLY / NOMINATE */}
       <section id="apply" className="bg-off-white py-28 md:py-32">
-        <div className="container-prose max-w-3xl">
-          <div className="text-center mb-12">
-            <div className="text-xs uppercase tracking-[0.3em] text-gold mb-3">Apply</div>
-            <h2 className="font-display text-4xl md:text-5xl text-navy">Apply to SIA 2026.</h2>
-            <p className="mt-3 text-muted-foreground">
-              Roughly fifteen minutes. Completely free. Deadline 25 July 2026.
+        <div className="container-prose max-w-5xl">
+          <div className="text-center mb-14">
+            <div className="text-xs uppercase tracking-[0.3em] text-gold mb-3">Apply or Nominate</div>
+            <h2 className="font-display text-4xl md:text-5xl text-navy">Two ways to take part.</h2>
+            <p className="mt-3 text-muted-foreground max-w-xl mx-auto">
+              Applications and nominations are completely free. Deadline 25 July 2026.
             </p>
-            <div className="mt-6 inline-flex items-center gap-3 px-4 py-2 rounded-sm bg-gold text-navy font-semibold text-sm">
-              ⏳ Applications close: 25 July 2026
+            <div className="mt-6 inline-flex items-center gap-3 px-4 py-2 rounded-sm bg-navy text-gold-light font-medium text-sm tracking-wide">
+              ⏳ Closes 25 July 2026
             </div>
           </div>
-          <ApplyForm />
+
+          <div className="grid md:grid-cols-2 gap-6">
+            {/* Applicant */}
+            <div className="group relative bg-white border border-gold/30 rounded-sm p-10 flex flex-col shadow-sm hover:shadow-md transition-shadow">
+              <div className="text-[10px] uppercase tracking-[0.3em] text-gold">01 · For students</div>
+              <h3 className="mt-3 font-display text-3xl text-navy">Applicant Form</h3>
+              <p className="mt-3 text-navy/70 leading-relaxed flex-1">
+                Apply directly if you are a Ugandan student aged 9–24 leading your own
+                project, initiative or innovation.
+              </p>
+              <div className="my-6 h-px bg-gold/20" />
+              <a
+                href="https://form.jotform.com/261625720398058"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center justify-center gap-2 px-6 py-4 bg-navy text-gold-light font-medium tracking-wide uppercase text-sm hover:bg-navy/90 transition-colors rounded-sm"
+              >
+                Open Applicant Form →
+              </a>
+              <div className="mt-3 text-xs text-navy/50 break-all font-mono">
+                form.jotform.com/261625720398058
+              </div>
+            </div>
+
+            {/* Nomination */}
+            <div className="group relative bg-navy text-white border border-gold/40 rounded-sm p-10 flex flex-col shadow-sm hover:shadow-md transition-shadow">
+              <div className="text-[10px] uppercase tracking-[0.3em] text-gold-light">02 · For teachers, mentors & peers</div>
+              <h3 className="mt-3 font-display text-3xl text-gold-light">Nomination Form</h3>
+              <p className="mt-3 text-white/75 leading-relaxed flex-1">
+                Know a remarkable student, teacher or club? Nominate them for recognition —
+                including our Honorary Awards.
+              </p>
+              <div className="my-6 h-px bg-gold/30" />
+              <a
+                href="https://form.jotform.com/261630897198067"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center justify-center gap-2 px-6 py-4 bg-gold text-navy font-medium tracking-wide uppercase text-sm hover:bg-gold-light transition-colors rounded-sm"
+              >
+                Open Nomination Form →
+              </a>
+              <div className="mt-3 text-xs text-white/50 break-all font-mono">
+                form.jotform.com/261630897198067
+              </div>
+            </div>
+          </div>
         </div>
       </section>
+
+
 
       {/* CEREMONY VIDEO BLOCK */}
       <section className="bg-white py-24 border-y border-border">
